@@ -10,7 +10,7 @@ void loop() {
   voltage /=100;// divide by 100 to get the decimal values
   voltage -= .2;
   Serial.println(voltage);
-
+  delay(100);
   
   
 }

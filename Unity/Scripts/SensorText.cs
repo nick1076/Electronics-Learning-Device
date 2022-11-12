@@ -7,7 +7,7 @@ using System.IO.Ports;
 
 public class SensorText : MonoBehaviour
 {
-    // Soil Moisture
+    // Voltage Value
     public TextMeshProUGUI sensorText;
     public float moisture;
 
@@ -23,20 +23,31 @@ public class SensorText : MonoBehaviour
 
     //Source Visual
     public GameObject AA;
+    public GameObject AAx3;
     public GameObject nineVolt;
     public GameObject missing;
     public GameObject unknown;
 
+    //Graph
+    public VoltageGraph vGraph;
+
+    //Hidden
+    SerialPort mySerialPort;
+
     private void Start()
     {
+        if (!inDebug)
+        {
+            mySerialPort = new SerialPort(selMen.portSelected);
+            mySerialPort.BaudRate = 9600;
+            mySerialPort.Parity = Parity.None;
+            mySerialPort.StopBits = StopBits.One;
+            mySerialPort.DataBits = 8;
+            mySerialPort.Handshake = Handshake.None;
+        }
         //stream.Close();
         //stream.Open();
         StartCoroutine(ReadSerial());
-    }
-
-    void Update()
-    {
-        UpdateSensorText();
     }
 
     public void DisplaySource(int id)
@@ -47,6 +58,7 @@ public class SensorText : MonoBehaviour
             nineVolt.gameObject.SetActive(false);
             AA.gameObject.SetActive(false);
             unknown.gameObject.SetActive(false);
+            AAx3.gameObject.SetActive(false);
         }
         else if (id == 1)
         {
@@ -54,6 +66,7 @@ public class SensorText : MonoBehaviour
             nineVolt.gameObject.SetActive(false);
             AA.gameObject.SetActive(true);
             unknown.gameObject.SetActive(false);
+            AAx3.gameObject.SetActive(false);
         }
         else if (id == 2)
         {
@@ -61,6 +74,7 @@ public class SensorText : MonoBehaviour
             nineVolt.gameObject.SetActive(true);
             AA.gameObject.SetActive(false);
             unknown.gameObject.SetActive(false);
+            AAx3.gameObject.SetActive(false);
         }
         else if (id == 3)
         {
@@ -68,14 +82,21 @@ public class SensorText : MonoBehaviour
             nineVolt.gameObject.SetActive(false);
             AA.gameObject.SetActive(false);
             unknown.gameObject.SetActive(true);
+            AAx3.gameObject.SetActive(false);
+        }
+        else if (id == 4)
+        {
+            missing.gameObject.SetActive(false);
+            nineVolt.gameObject.SetActive(false);
+            AA.gameObject.SetActive(false);
+            unknown.gameObject.SetActive(false);
+            AAx3.gameObject.SetActive(true);
         }
     }
 
     IEnumerator ReadSerial()
     {
-        yield return new WaitForSeconds(.1f);
-
-        //Data RecievalSerialPort mySerialPort = new SerialPort("COM1");
+        yield return new WaitForSeconds(.5f);
         Process();
     }
 
@@ -84,18 +105,16 @@ public class SensorText : MonoBehaviour
         if (inDebug)
         {
             Update_MoistureVisual(moisture);
+            StartCoroutine(ReadSerial());
             return;
         }
 
-        SerialPort mySerialPort = new SerialPort(selMen.portSelected);
-        mySerialPort.BaudRate = 9600;
-        mySerialPort.Parity = Parity.None;
-        mySerialPort.StopBits = StopBits.One;
-        mySerialPort.DataBits = 8;
-        mySerialPort.Handshake = Handshake.None;
-        mySerialPort.Open();
+        if (mySerialPort.IsOpen == false)
+        {
+            mySerialPort.Open();
+        }
         string value = mySerialPort.ReadLine();
-        mySerialPort.Close();
+        //mySerialPort.Close();
 
         //Soil Moisture
         print(value);
@@ -157,9 +176,12 @@ public class SensorText : MonoBehaviour
 
     public void Update_MoistureVisual(float reading)
     {
+        vGraph.AddVoltageEntry(reading);
         sensorText.text = reading.ToString() + "v";
-        electronChannel.transform.localScale = new Vector3(electronChannel.transform.localScale.x, reading, electronChannel.transform.localScale.z);
-        electronChannelBorder.transform.localScale = new Vector3(electronChannelBorder.transform.localScale.x, reading + 0.45f, electronChannelBorder.transform.localScale.z);
+
+        float wireGauge = 4;
+        electronChannel.transform.localScale = new Vector3(electronChannel.transform.localScale.x, wireGauge, electronChannel.transform.localScale.z);
+        electronChannelBorder.transform.localScale = new Vector3(electronChannelBorder.transform.localScale.x, wireGauge + 0.45f, electronChannelBorder.transform.localScale.z);
 
         if (reading <= 0)
         {
@@ -169,7 +191,9 @@ public class SensorText : MonoBehaviour
         {
             electrons.Play();
             var sh = electrons.shape;
-            sh.radius = reading / 6.1f;
+            var sp = electrons.main;
+            sh.radius = wireGauge / 6.1f;
+            sp.startSpeed = reading * 2.5f;
         }
 
         if (reading <= 0)
@@ -183,6 +207,10 @@ public class SensorText : MonoBehaviour
         else if (reading > 8 && reading < 11)
         {
             DisplaySource(2);
+        }
+        else if (reading > 4 && reading < 5)
+        {
+            DisplaySource(4);
         }
         else
         {
