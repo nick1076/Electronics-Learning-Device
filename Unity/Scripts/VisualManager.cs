@@ -5,31 +5,48 @@ using TMPro;
 using UnityEngine.UI;
 using System.IO.Ports;
 
-public class SensorText : MonoBehaviour
+public class VisualManager : MonoBehaviour
 {
-    // Voltage Value
-    public TextMeshProUGUI sensorText;
-    public float moisture;
-
     //General
+    [Header("General")]
     public bool inDebug = true;
-    public SelectionMenu selMen;
-    //SerialPort stream = new SerialPort("COM4", 9600);
+    public float timeBetweenGraphEntires = 0.1f;
+    public float timeBetweenVoltageReadings = 0.1f;
 
-    //Electron Visual
+    // Com Select Menu
+    [Header("Com Select Menu")]
+    public SelectionMenu selMen;
+
+    // Window - Voltage Value
+    [Header("Window - Voltage Value")]
+    public TextMeshProUGUI sensorText;
+    public float voltage;
+
+    //Window - Electron Visual
+    [Header("Window - Electron Visual")]
     public SpriteRenderer electronChannel;
     public SpriteRenderer electronChannelBorder;
     public ParticleSystem electrons;
 
-    //Source Visual
+    //Window - Source Visual
+    [Header("Window - Source Visual")]
     public GameObject AA;
     public GameObject AAx3;
     public GameObject nineVolt;
     public GameObject missing;
     public GameObject unknown;
 
-    //Graph
+    //Window - Graph
+    [Header("Window - Graph")]
     public VoltageGraph vGraph;
+
+    //Window - Debug Menu
+    [Header("Window - Debug Menu")]
+    public Slider voltageOverideSlider;
+    public TextMeshProUGUI voltageOverideText;
+    public Slider graphingTimeSlider;
+    public TextMeshProUGUI graphingTimeText;
+    public float graphingTimeRange = 2;
 
     //Hidden
     SerialPort mySerialPort;
@@ -38,6 +55,10 @@ public class SensorText : MonoBehaviour
     {
         if (!inDebug)
         {
+            //Disable Specific Debug Tools
+            voltageOverideSlider.enabled = false;
+            voltageOverideText.text = "";
+
             mySerialPort = new SerialPort(selMen.portSelected);
             mySerialPort.BaudRate = 9600;
             mySerialPort.Parity = Parity.None;
@@ -45,9 +66,43 @@ public class SensorText : MonoBehaviour
             mySerialPort.DataBits = 8;
             mySerialPort.Handshake = Handshake.None;
         }
-        //stream.Close();
-        //stream.Open();
+
         StartCoroutine(ReadSerial());
+        StartCoroutine(GraphData());
+    }
+
+    private void Update()
+    {
+        graphingTimeSlider.minValue = timeBetweenVoltageReadings;
+        graphingTimeSlider.maxValue = Mathf.RoundToInt(timeBetweenVoltageReadings + graphingTimeRange);
+
+        if (graphingTimeSlider.value < graphingTimeSlider.minValue)
+        {
+            graphingTimeSlider.value = graphingTimeSlider.minValue;
+        }
+
+        if (graphingTimeSlider.value > graphingTimeSlider.maxValue)
+        {
+            graphingTimeSlider.value = graphingTimeSlider.maxValue;
+        }
+
+        timeBetweenGraphEntires = (Mathf.Round(graphingTimeSlider.value * 10)) / 10;
+
+        if (timeBetweenGraphEntires == 1)
+        {
+            graphingTimeText.text = timeBetweenGraphEntires.ToString() + " Second";
+        }
+        else
+        {
+            graphingTimeText.text = timeBetweenGraphEntires.ToString() + " Seconds";
+        }
+    }
+
+    IEnumerator GraphData()
+    {
+        yield return new WaitForSeconds(timeBetweenGraphEntires);
+        vGraph.AddVoltageEntry(voltage);
+        StartCoroutine(GraphData());
     }
 
     public void DisplaySource(int id)
@@ -96,7 +151,7 @@ public class SensorText : MonoBehaviour
 
     IEnumerator ReadSerial()
     {
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(timeBetweenVoltageReadings);
         Process();
     }
 
@@ -104,7 +159,11 @@ public class SensorText : MonoBehaviour
     {
         if (inDebug)
         {
-            Update_MoistureVisual(moisture);
+            float vNew = voltageOverideSlider.value;
+            vNew = (Mathf.Round(vNew * 10)) / 10;
+            voltage = vNew;
+            voltageOverideText.text = vNew.ToString() + "v";
+            UpdateVoltageVisuals(voltage);
             StartCoroutine(ReadSerial());
             return;
         }
@@ -114,9 +173,8 @@ public class SensorText : MonoBehaviour
             mySerialPort.Open();
         }
         string value = mySerialPort.ReadLine();
-        //mySerialPort.Close();
 
-        //Soil Moisture
+        //Voltage
         print(value);
 
         string[] values = value.Split('?');
@@ -139,7 +197,7 @@ public class SensorText : MonoBehaviour
                 return;
             }
 
-            Update_MoistureVisual(soilMoisture);
+            UpdateVoltageVisuals(soilMoisture);
             sensorText.text = soilMoisture.ToString() + "v";
 
             StartCoroutine(ReadSerial());
@@ -154,29 +212,14 @@ public class SensorText : MonoBehaviour
             return;
         }
 
-        Update_MoistureVisual(soilMoisture);
+        UpdateVoltageVisuals(soilMoisture);
         sensorText.text = soilMoisture.ToString() + "v";
 
         StartCoroutine(ReadSerial());
     }
 
-    public void UpdateSensorText()
+    public void UpdateVoltageVisuals(float reading)
     {
-        if (inDebug)
-        {
-            Update_MoistureVisual(moisture);
-            return;
-        }
-        return;
-
-        
-    }
-
-    
-
-    public void Update_MoistureVisual(float reading)
-    {
-        vGraph.AddVoltageEntry(reading);
         sensorText.text = reading.ToString() + "v";
 
         float wireGauge = 4;

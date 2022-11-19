@@ -1,0 +1,25 @@
+fileFormatVersion: 2
+guid: 5c1b8f06b88fb7b48aea465060a784df
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Gillius ADF No2
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: d4dac75ecff73fa4e955bd1fca02a2ff, type: 3}
+  - {fileID: 12800000, guid: 48c97937fb96ad24f8195785f566a6ae, type: 3}
+  - {fileID: 12800000, guid: 3563ca571a64ba740850e936191b79cf, type: 3}
+  - {fileID: 12800000, guid: 6b27ca930e6dce640a69e167f207d877, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
