@@ -173,6 +173,7 @@ public class VisualManager : MonoBehaviour
             mySerialPort.Open();
         }
         string value = mySerialPort.ReadLine();
+        mySerialPort.BaseStream.Flush();
 
         //Voltage
         print(value);
@@ -220,6 +221,7 @@ public class VisualManager : MonoBehaviour
 
     public void UpdateVoltageVisuals(float reading)
     {
+        voltage = reading;
         sensorText.text = reading.ToString() + "v";
 
         float wireGauge = 4;
