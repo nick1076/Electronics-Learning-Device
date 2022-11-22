@@ -40,6 +40,11 @@ public class VisualManager : MonoBehaviour
     [Header("Window - Graph")]
     public VoltageGraph vGraph;
 
+    //Window - High/Low Visual
+    [Header("Window - High/Low Visual")]
+    public GameObject high;
+    public GameObject low;
+
     //Window - Debug Menu
     [Header("Window - Debug Menu")]
     public Slider voltageOverideSlider;
@@ -47,12 +52,20 @@ public class VisualManager : MonoBehaviour
     public Slider graphingTimeSlider;
     public TextMeshProUGUI graphingTimeText;
     public float graphingTimeRange = 2;
+    public TextMeshProUGUI comName;
 
     //Hidden
     SerialPort mySerialPort;
 
     private void Start()
     {
+        comName.text = "Selected Port: " + selMen.portSelected;
+
+        if (selMen.portSelected == "NULL")
+        {
+            inDebug = true;
+        }
+
         if (!inDebug)
         {
             //Disable Specific Debug Tools
@@ -239,6 +252,17 @@ public class VisualManager : MonoBehaviour
             var sp = electrons.main;
             sh.radius = wireGauge / 6.1f;
             sp.startSpeed = reading * 2.5f;
+        }
+
+        if (reading <= 0)
+        {
+            low.SetActive(true);
+            high.SetActive(false);
+        }
+        else
+        {
+            low.SetActive(false);
+            high.SetActive(true);
         }
 
         if (reading <= 0)

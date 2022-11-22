@@ -13,16 +13,24 @@ public class SelectionMenu : MonoBehaviour
     public GameObject serialSelectMenu;
     public Button continueButton;
 
+    public string debugPortName = "Debug Port";
     public string portSelected = "NULL";
-    private string[] ports;
+    private List<string> ports = new List<string>();
 
     private void Start()
     {
         string[] portsList = SerialPort.GetPortNames();
-        ports = portsList;
+
+        ports.Add(debugPortName);
+
+        foreach (string p in portsList)
+        {
+            ports.Add(p);
+        }
+
         TMP_Dropdown.OptionDataList list = new TMP_Dropdown.OptionDataList();
 
-        foreach (string port in portsList)
+        foreach (string port in ports)
         {
             TMP_Dropdown.OptionData data = new TMP_Dropdown.OptionData();
             data.text = port;
@@ -47,6 +55,14 @@ public class SelectionMenu : MonoBehaviour
     public void Continue()
     {
         portSelected = ports[comSelection.value - 1];
+        if (portSelected == debugPortName)
+        {
+            primaryMenu.GetComponent<VisualManager>().inDebug = true;
+        }
+        else
+        {
+            primaryMenu.GetComponent<VisualManager>().inDebug = false;
+        }
 
         primaryMenu.SetActive(true);
         serialSelectMenu.SetActive(false);
