@@ -10,6 +10,8 @@ public class LessonManager : MonoBehaviour
     public int stepID = -1;
     public List<GameObject> alternateUI = new List<GameObject>();
 
+    public WindowManager winMan;
+
     private void Start()
     {
         foreach (LessonSteps set in stepSets)
@@ -117,6 +119,8 @@ public class LessonManager : MonoBehaviour
         {
             obj.SetActive(false);
         }
+
+        winMan.Hide();
     }
 
     public void ShowAllUI()
@@ -125,5 +129,7 @@ public class LessonManager : MonoBehaviour
         {
             obj.SetActive(true);
         }
+
+        winMan.Show();
     }
 }

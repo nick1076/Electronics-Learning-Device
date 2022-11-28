@@ -111,4 +111,20 @@ public class WindowManager : MonoBehaviour
         }
     }
 
+    public void Hide()
+    {
+        foreach (WindowEntry win in windows)
+        {
+            win.physicalWindow.SetActive(false);
+            win.windowTab.SetActive(false);
+        }
+        this.GetComponent<Image>().enabled = false;
+    }
+
+    public void Show()
+    {
+        this.GetComponent<Image>().enabled = true;
+        SelectMode(GetModeByName(modeSelector.options[modeSelector.value].text));
+    }
+
 }

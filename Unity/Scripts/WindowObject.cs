@@ -22,7 +22,9 @@ public class WindowObject : MonoBehaviour
 
         if (dragging)
         {
-            transform.localPosition = Input.mousePosition - canv.transform.localPosition;
+            Vector3 mousePos = Input.mousePosition;
+            mousePos.z = Camera.main.nearClipPlane;
+            this.transform.position = Camera.main.ScreenToWorldPoint(mousePos);
         }
     }
 

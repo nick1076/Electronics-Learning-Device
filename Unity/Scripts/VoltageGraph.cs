@@ -20,6 +20,8 @@ public class VoltageGraph : MonoBehaviour
     public float maxSeenVoltage;
     public float minSeenVoltage;
 
+    public List<LineRenderer> connectors = new List<LineRenderer>();
+
     private void Start()
     {
         totalRange = maxPointPos - minPointPos;
@@ -33,12 +35,11 @@ public class VoltageGraph : MonoBehaviour
     {
         if (v < 0)
         {
-            v = 0;
+            v = Mathf.Abs(v);
+            Debug.Log("Voltage was negative");
         }
         maxSeenVoltage = 0;
         minSeenVoltage = 0;
-
-        float percentagePadding = 5;
 
         for (int i = voltages.Count - 1; i > voltages.Count - 1 - points.Count; i--)
         {
@@ -69,6 +70,7 @@ public class VoltageGraph : MonoBehaviour
             centralize = true;
         }
 
+        
         for (int i = voltages.Count - 1; i > voltages.Count - 1 - points.Count; i--)
         {
             if (!centralize)
@@ -85,6 +87,17 @@ public class VoltageGraph : MonoBehaviour
             }
 
             pointPos--;
+
+            if (pointPos == -1)
+            {
+                break;
+            }
+        } 
+
+        for (int i = 0; i < connectors.Count; i++)
+        {
+            connectors[i].SetPosition(0, points[i].point.transform.position);
+            connectors[i].SetPosition(1, points[i + 1].point.transform.position);
         }
     }
 }

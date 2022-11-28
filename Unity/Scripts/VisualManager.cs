@@ -81,7 +81,6 @@ public class VisualManager : MonoBehaviour
         }
 
         StartCoroutine(ReadSerial());
-        StartCoroutine(GraphData());
     }
 
     private void Update()
@@ -111,11 +110,10 @@ public class VisualManager : MonoBehaviour
         }
     }
 
-    IEnumerator GraphData()
+    public void Graph()
     {
-        yield return new WaitForSeconds(timeBetweenGraphEntires);
         vGraph.AddVoltageEntry(voltage);
-        StartCoroutine(GraphData());
+        print("Logging voltage");
     }
 
     public void DisplaySource(int id)
