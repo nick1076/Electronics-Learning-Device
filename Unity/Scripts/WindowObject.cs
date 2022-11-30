@@ -24,7 +24,9 @@ public class WindowObject : MonoBehaviour
         {
             Vector3 mousePos = Input.mousePosition;
             mousePos.z = Camera.main.nearClipPlane;
-            this.transform.position = Camera.main.ScreenToWorldPoint(mousePos);
+            Vector3 newPos = Camera.main.ScreenToWorldPoint(mousePos);
+            newPos.z = 1;
+            this.transform.position = newPos;
         }
     }
 

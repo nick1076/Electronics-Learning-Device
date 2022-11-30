@@ -69,7 +69,6 @@ public class VoltageGraph : MonoBehaviour
         {
             centralize = true;
         }
-
         
         for (int i = voltages.Count - 1; i > voltages.Count - 1 - points.Count; i--)
         {
@@ -92,7 +91,7 @@ public class VoltageGraph : MonoBehaviour
             {
                 break;
             }
-        } 
+        }
 
         for (int i = 0; i < connectors.Count; i++)
         {
