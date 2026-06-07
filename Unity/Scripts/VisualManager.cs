@@ -22,28 +22,9 @@ public class VisualManager : MonoBehaviour
     public TextMeshProUGUI sensorText;
     public float voltage;
 
-    //Window - Electron Visual
-    [Header("Window - Electron Visual")]
-    public SpriteRenderer electronChannel;
-    public SpriteRenderer electronChannelBorder;
-    public ParticleSystem electrons;
-
-    //Window - Source Visual
-    [Header("Window - Source Visual")]
-    public GameObject AA;
-    public GameObject AAx3;
-    public GameObject nineVolt;
-    public GameObject missing;
-    public GameObject unknown;
-
     //Window - Graph
     [Header("Window - Graph")]
     public VoltageGraph vGraph;
-
-    //Window - High/Low Visual
-    [Header("Window - High/Low Visual")]
-    public GameObject high;
-    public GameObject low;
 
     //Window - Debug Menu
     [Header("Window - Debug Menu")]
@@ -118,46 +99,7 @@ public class VisualManager : MonoBehaviour
 
     public void DisplaySource(int id)
     {
-        if (id == 0)
-        {
-            missing.gameObject.SetActive(true);
-            nineVolt.gameObject.SetActive(false);
-            AA.gameObject.SetActive(false);
-            unknown.gameObject.SetActive(false);
-            AAx3.gameObject.SetActive(false);
-        }
-        else if (id == 1)
-        {
-            missing.gameObject.SetActive(false);
-            nineVolt.gameObject.SetActive(false);
-            AA.gameObject.SetActive(true);
-            unknown.gameObject.SetActive(false);
-            AAx3.gameObject.SetActive(false);
-        }
-        else if (id == 2)
-        {
-            missing.gameObject.SetActive(false);
-            nineVolt.gameObject.SetActive(true);
-            AA.gameObject.SetActive(false);
-            unknown.gameObject.SetActive(false);
-            AAx3.gameObject.SetActive(false);
-        }
-        else if (id == 3)
-        {
-            missing.gameObject.SetActive(false);
-            nineVolt.gameObject.SetActive(false);
-            AA.gameObject.SetActive(false);
-            unknown.gameObject.SetActive(true);
-            AAx3.gameObject.SetActive(false);
-        }
-        else if (id == 4)
-        {
-            missing.gameObject.SetActive(false);
-            nineVolt.gameObject.SetActive(false);
-            AA.gameObject.SetActive(false);
-            unknown.gameObject.SetActive(false);
-            AAx3.gameObject.SetActive(true);
-        }
+
     }
 
     IEnumerator ReadSerial()
@@ -236,31 +178,23 @@ public class VisualManager : MonoBehaviour
         sensorText.text = reading.ToString() + "v";
 
         float wireGauge = 4;
-        electronChannel.transform.localScale = new Vector3(electronChannel.transform.localScale.x, wireGauge, electronChannel.transform.localScale.z);
-        electronChannelBorder.transform.localScale = new Vector3(electronChannelBorder.transform.localScale.x, wireGauge + 0.45f, electronChannelBorder.transform.localScale.z);
 
         if (reading <= 0)
         {
-            electrons.Stop();
+
         }
         else
         {
-            electrons.Play();
-            var sh = electrons.shape;
-            var sp = electrons.main;
-            sh.radius = wireGauge / 6.1f;
-            sp.startSpeed = reading * 2.5f;
+
         }
 
         if (reading <= 0)
         {
-            low.SetActive(true);
-            high.SetActive(false);
+
         }
         else
         {
-            low.SetActive(false);
-            high.SetActive(true);
+
         }
 
         if (reading <= 0)

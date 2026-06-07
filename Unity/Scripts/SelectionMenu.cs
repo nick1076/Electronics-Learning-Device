@@ -21,7 +21,7 @@ public class SelectionMenu : MonoBehaviour
     {
         string[] portsList = SerialPort.GetPortNames();
 
-        ports.Add(debugPortName);
+        //ports.Add(debugPortName);
 
         foreach (string p in portsList)
         {
